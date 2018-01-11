@@ -26,33 +26,27 @@ class UnivariateNormal(ProbabilityModel):
 	# generate a random variable within the provided signma and mu
 	def next(self):
 		x = np.random.uniform()
-		error_thresh = 0.01
+		error_thresh = 0.0001
 		error = np.inf
-		ub, lb, mid = 100, -100, 0
+		ub, lb, mid = self.mu+1000*self.sigma, self.mu-1000*self.sigma, self.mu
 		prob_l, prob_u, prob_mid = 0.0,1.0,0.5
-		interval = 0.01
-		integration_x = np.linspace(lb, ub, (ub-lb)/interval)
-		integration_y = [self.density_function(i) for i in integration_x]
-		print np.trapz(integration_y[0:],integration_x[0:])
 		i = 0
 		while error > error_thresh and i < 100:
-			# print 'x',x,"prob_mid",prob_mid,  'lb',lb,'mid', mid, 'ub',ub
-			if prob_mid < x:
+			if prob_mid < x:                                     #move to larger range
 				lb = mid
-				# print int((lb+100)/interval),integration_y[int((lb+100)/interval)]
-				# prob_l = integrate.quad(self.density_function,a=-np.inf,b=lb)
-				prob_l = np.trapz(integration_y[0:int((lb+100)/interval)],integration_x[0:int((lb+100)/interval)])
-			else:
-				up = mid
-				# prob_u = integrate.quad(self.density_function,a=-np.inf,b=ub)
-				prob_u = np.trapz(integration_y[0:int((ub+100)/interval)],integration_x[0:int((ub+100)/interval)])
+				prob_l = self.cumulative_density_function(lb)
+			else:                                                #move to smaller range
+				ub = mid
+				prib_u = self.cumulative_density_function(ub)
 			mid = (ub+lb)/2.0
-			# prob_mid = integrate.quad(self.density_function,a=-np.inf,b=mid)
-			prob_mid = np.trapz(integration_y[0:int((mid+100)/interval)],integration_x[0:int((mid+100)/interval)])
+			prob_mid = self.cumulative_density_function(mid)
 			error = abs(prob_mid-x)
 			i += 1
 		print x
 		return mid
+
+	def cumulative_density_function(self, x):
+		return 0.5 + 0.5 * math.erf((x-self.mu)/(self.sigma*math.sqrt(2)))
 
 	def density_function(self, x):
 		return 1/(self.sigma * (2*math.pi)**(1/2)) * math.exp(-(x-self.mu)**2/2*self.sigma**2)
