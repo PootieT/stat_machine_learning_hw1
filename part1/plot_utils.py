@@ -1,11 +1,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def plot_data(X,y,xlabel,ylabel):
+def plot_data(X,y,xlabel,ylabel,ylim=[]):
     fig = plt.figure()
     plt.plot(X,y,'bo')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
+    plt.ylim(ylim)
 
 
 def plot_line(X,y,xlabel,ylabel):

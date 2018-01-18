@@ -88,7 +88,7 @@ class RegularizedLinearRegressor_Multi:
         # Implement this method. Store the predicted outputs in y_pred.           #
         #  1 line of code expected                                                #
         ###########################################################################
-
+        y_pred = np.dot(X, self.theta)
 
         ###########################################################################
         #                           END OF YOUR CODE                              #
@@ -132,8 +132,8 @@ class RegularizedLinearReg_SquaredLoss(RegularizedLinearRegressor_Multi):
         # Calculate J (loss) wrt to X,y, and theta.                               #
         #  2 lines of code expected                                               #
         ###########################################################################
-
-
+        J = 1.0/(2.0*num_examples)*sum((np.dot(X, np.array(theta).T)- y)**2)
+        J += reg/(2.0*num_examples)*sum(theta**2)
         ###########################################################################
         #                           END OF YOUR CODE                              #
         ###########################################################################
@@ -149,8 +149,8 @@ class RegularizedLinearReg_SquaredLoss(RegularizedLinearRegressor_Multi):
         # Calculate gradient of loss function wrt to X,y, and theta.              #
         #  3 lines of code expected                                               #
         ###########################################################################
-
-
+        grad[0] = 1.0/num_examples* (np.dot((np.dot(X, np.array(theta).T)- y).T, X))[0]
+        grad[1:] = 1.0/num_examples* (np.dot((np.dot(X, np.array(theta).T)- y).T, X))[1:] + reg/num_examples*theta[1:]
         ###########################################################################
         #                           END OF YOUR CODE                              #
         ###########################################################################

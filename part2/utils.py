@@ -5,7 +5,6 @@ import scipy.io
 from reg_linear_regressor_multi import RegularizedLinearReg_SquaredLoss
 import plot_utils
 
-
 #############################################################################
 #  Normalize features of data matrix X so that every column has zero        #
 #  mean and unit variance                                                   #
@@ -21,9 +20,10 @@ def feature_normalize(X):
 
     ########################################################################
     # TODO: modify the three lines below to return the correct values
-    mu = np.zeros((X.shape[1],))
-    sigma = np.ones((X.shape[1],))
-    X_norm = np.zeros(X.shape)
+    n = np.shape(X)[0]
+    mu = np.mean(X, axis=0)
+    sigma = np.std(X, axis=0)
+    X_norm = (X - np.tile(mu, (n,1))) / np.tile(sigma, (n,1))
   
     ########################################################################
     return X_norm, mu, sigma
@@ -55,9 +55,11 @@ def learning_curve(X,y,Xval,yval,reg):
     # TODO: compute error_train and error_val                                 #
     # 7 lines of code expected                                                #
     ###########################################################################
-
-
-
+    for i in range(1,13):
+        model = RegularizedLinearReg_SquaredLoss()
+        theta = model.train(X[:i],y[:i],reg=reg,num_iters=1000)
+        error_train[i-1] = model.loss(theta,X[:i],y[:i],0)
+        error_val[i-1] = model.loss(theta,Xval,yval,0)
     ###########################################################################
 
     return error_train, error_val
@@ -81,16 +83,21 @@ def learning_curve(X,y,Xval,yval,reg):
 
 def validation_curve(X,y,Xval,yval):
   
-  reg_vec = [0, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10]
-  error_train = np.zeros((len(reg_vec),))
-  error_val = np.zeros((len(reg_vec),))
+    reg_vec = [0, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1, 3, 10]
+    error_train = np.zeros((len(reg_vec),))
+    error_val = np.zeros((len(reg_vec),))
 
     ###########################################################################
     # TODO: compute error_train and error_val                                 #
     # 5 lines of code expected                                                #
     ###########################################################################
+    for i, reg in enumerate(reg_vec):
+        model = RegularizedLinearReg_SquaredLoss()
+        theta = model.train(X,y,reg=reg,num_iters=1000)
+        error_train[i] = model.loss(theta,X,y,0)
+        error_val[i] = model.loss(theta,Xval,yval,0)
 
-  return reg_vec, error_train, error_val
+    return reg_vec, error_train, error_val
 
 import random
 
@@ -120,7 +127,23 @@ def averaged_learning_curve(X,y,Xval,yval,reg):
     # TODO: compute error_train and error_val                                 #
     # 10-12 lines of code expected                                            #
     ###########################################################################
-
+    for i in range(1,13):
+        error_t = []
+        error_v = []
+        for _ in range(50):
+            arr = np.arange(len(X))
+            np.random.shuffle(arr)
+            arr = arr[:i+1]
+            Xi, yi, Xvali, yvali = np.squeeze(X[arr]), np.squeeze(y[arr]), np.squeeze(Xval[arr]), np.squeeze(yval[arr])
+            print Xi.shape, yi.shape, Xvali.shape, yvali.shape
+            print arr
+            model = RegularizedLinearReg_SquaredLoss()
+            theta = model.train(Xi,yi,reg=reg,num_iters=1000)
+            error_t.append(model.loss(theta,np.array(Xi),np.array(yi),0))
+            error_v.append(model.loss(theta,Xvali,yvali,0))
+        print arr
+        error_train[i-1] = np.mean(np.array(error_t))
+        error_val[i-1] = np.mean(np.array(error_v))
 
 
     ###########################################################################

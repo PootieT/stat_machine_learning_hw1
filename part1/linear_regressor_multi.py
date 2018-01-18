@@ -1,4 +1,5 @@
 import numpy as np
+from numpy.linalg import inv
 
 class LinearRegressor_Multi:
 
@@ -41,7 +42,7 @@ class LinearRegressor_Multi:
             # Update the parameters using the gradient and the learning rate.       #
             #   One line of code expected
             #########################################################################
-
+            self.theta = self.theta - learning_rate * grad
 
             #########################################################################
             #                       END OF YOUR CODE                                #
@@ -86,7 +87,7 @@ class LinearRegressor_Multi:
         # Implement this method. Store the predicted outputs in y_pred.           #
         #  One line of code expected                                              #
         ###########################################################################
-
+        y_pred = np.dot(X, self.theta)
 
         ###########################################################################
         #                           END OF YOUR CODE                              #
@@ -104,8 +105,7 @@ class LinearRegressor_Multi:
         #  One line of code expected                                              #
         ###########################################################################
 
-        theta_n = np.zeros((X.shape[1],))
-
+        theta_n = np.dot(inv(np.dot(X.T, X)), np.dot(X.T, y))
         ###########################################################################
 
         return theta_n
@@ -130,8 +130,8 @@ class LinearReg_SquaredLoss(LinearRegressor_Multi):
         # Calculate J (loss) and grad (gradient) wrt to X,y, and self.theta.      #
         #  2-3 lines of code expected                                             #
         ###########################################################################
-
-
+        J = 1.0/(2.0*num_examples)*sum((np.dot(X, np.array(self.theta).T)- y)**2)
+        grad = 1.0/num_examples* np.dot((np.dot(X, np.array(self.theta).T)- y).T, X)
 
         ###########################################################################
         #                           END OF YOUR CODE                              #

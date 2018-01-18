@@ -23,6 +23,7 @@ class LinearRegressor:
         """
     
         J_history = []
+        m = np.shape(X)[0]
 
         # Initialize self.theta
         if self.theta is None:
@@ -42,8 +43,7 @@ class LinearRegressor:
             # Update the parameters using the gradient and the learning rate.       #
             #    One line of code expected                                          #
             #########################################################################
-
-
+            self.theta = self.theta - learning_rate * grad
 
             #########################################################################
             #                       END OF YOUR CODE                                #
@@ -88,7 +88,7 @@ class LinearRegressor:
         # Implement this method. Store the predicted outputs in y_pred.           #
         #    One line of code expected                                            #
         ###########################################################################
-
+        y_pred = np.dot(X, self.theta)
 
         ###########################################################################
         #                           END OF YOUR CODE                              #
@@ -115,8 +115,9 @@ class LinearReg_SquaredLoss(LinearRegressor):
         # Calculate J (loss) and grad (gradient) wrt to X,y, and self.theta.      #
         #   2-4 lines of code expected                                            #
         ###########################################################################
-
-
+        m = np.shape(X)[0]
+        J = 1.0/(2.0*m)*sum((np.dot(X, np.array(self.theta).T)- y)**2)
+        grad = 1.0/m* np.dot((np.dot(X, np.array(self.theta).T)- y).T, X)
         ###########################################################################
         #                           END OF YOUR CODE                              #
         ###########################################################################
