@@ -65,7 +65,7 @@ class MultiVariateNormal(ProbabilityModel):
 		self.Sigma = Sigma
 
 	# generate a vector of normally distributed variables
-	def next(self, tol = 0.000001):
+	def next(self):
 		n = 1                              #how many set of variables 
 		uni_model = UnivariateNormal(0,1)
 		p = len(self.Mu)
@@ -74,7 +74,13 @@ class MultiVariateNormal(ProbabilityModel):
 		X = np.squeeze(self.Mu) + e_vec * np.diag(np.sqrt(e_val)) * X.T
 		return np.diagonal(np.squeeze(X)).real		
 
-	
+	def next2(self):
+		n = 1
+		uni_model = UnivariateNormal(0,1)
+		p = len(self.Mu)
+		L = np.linalg.cholesky(self.Sigma)
+		X = np.array([uni_model.next() for i in range(n*p)]).reshape((n,p))
+		return (np.dot(L,X.T).T + self.Mu)[0]
 
 # The sample space of this probability model is the finite discrete set {0..k-1}, and 
 # the probability measure is defined by the atomic probabilities 
@@ -126,8 +132,8 @@ class MixtureModel(ProbabilityModel):
 # model = UnivariateNormal(100,10)
 # print model.next()
 
-# model = MultiVariateNormal(np.array([1,1]),np.array([[1,0],[0,1]]))
-# print(model.next())
+model = MultiVariateNormal(np.array([1,1]),np.array([[1,0],[0,1]]))
+print(model.next2())
 
 # model = Categorical(np.array([0.1,0.3,0.6]))
 # print model.next()
@@ -175,13 +181,13 @@ def hw1_plot3():
 	# plot 3: Produce a scatter plot of the samples for a 2-D Gaussian with mean
 	#         at [1,1] and a covariance matrix [[1,0.5],[0.5,1]]
 	Mu = np.array([1,1])
-	Sigma = np.array([[1,0],[0,1]])
+	Sigma = np.array([[1,0.5],[0.5,1]])
 	multi_model = MultiVariateNormal(Mu, Sigma)
 	sample_size = 1000
 	X = []
 	Y = []
 	for _ in range(sample_size):
-		x, y = multi_model.next()
+		x, y = multi_model.next2()
 		X.append(x)
 		Y.append(y)
 	plt.scatter(X, Y)
@@ -199,7 +205,7 @@ def hw1_test4():
 	Mu_list = [np.array([-1,-1]),np.array([1,-1]),np.array([-1,1]),np.array([1,1])]
 	Sigma_list = [np.identity(2),np.identity(2),np.identity(2),np.identity(2)]
 	mix_model = MixtureModel(ap, [Mu_list, Sigma_list])
-	sample_size = 1000
+	sample_size = 100000
 	true = 0
 	for _ in range(sample_size):
 		x, y =  mix_model.next()
@@ -210,6 +216,6 @@ def hw1_test4():
 
 # hw1_plot1()
 # hw1_plot2()
-# hw1_plot3()
-print hw1_test4()
+hw1_plot3()
+# print hw1_test4()
 

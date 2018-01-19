@@ -6,7 +6,8 @@ def plot_data(X,y,xlabel,ylabel,ylim=[]):
     plt.plot(X,y,'bo')
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
-    plt.ylim(ylim)
+    if ylim != []:
+        plt.ylim(ylim)
 
 
 def plot_line(X,y,xlabel,ylabel):
