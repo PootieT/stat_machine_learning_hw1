@@ -66,15 +66,6 @@ class MultiVariateNormal(ProbabilityModel):
 
 	# generate a vector of normally distributed variables
 	def next(self):
-		n = 1                              #how many set of variables 
-		uni_model = UnivariateNormal(0,1)
-		p = len(self.Mu)
-		e_val, e_vec = linalg.eig(self.Sigma)
-		X = np.array([uni_model.next() for i in range(n*p)]).reshape((n,p))
-		X = np.squeeze(self.Mu) + e_vec * np.diag(np.sqrt(e_val)) * X.T
-		return np.diagonal(np.squeeze(X)).real		
-
-	def next2(self):
 		n = 1
 		uni_model = UnivariateNormal(0,1)
 		p = len(self.Mu)
@@ -132,8 +123,8 @@ class MixtureModel(ProbabilityModel):
 # model = UnivariateNormal(100,10)
 # print model.next()
 
-model = MultiVariateNormal(np.array([1,1]),np.array([[1,0],[0,1]]))
-print(model.next2())
+# model = MultiVariateNormal(np.array([1,1]),np.array([[1,0],[0,1]]))
+# print(model.next())
 
 # model = Categorical(np.array([0.1,0.3,0.6]))
 # print model.next()
@@ -187,7 +178,7 @@ def hw1_plot3():
 	X = []
 	Y = []
 	for _ in range(sample_size):
-		x, y = multi_model.next2()
+		x, y = multi_model.next()
 		X.append(x)
 		Y.append(y)
 	plt.scatter(X, Y)
@@ -216,6 +207,6 @@ def hw1_test4():
 
 # hw1_plot1()
 # hw1_plot2()
-hw1_plot3()
-# print hw1_test4()
+# hw1_plot3()
+print hw1_test4()
 
