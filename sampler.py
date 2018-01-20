@@ -25,25 +25,12 @@ class UnivariateNormal(ProbabilityModel):
 		self.sigma = sigma
 
 	# generate a random variable within the provided signma and mu
+        #box mueller transformation
 	def next(self):
-		x = np.random.uniform()
-		error_thresh = 0.0001
-		error = np.inf
-		ub, lb, mid = self.mu+1000*self.sigma, self.mu-1000*self.sigma, self.mu
-		prob_l, prob_u, prob_mid = 0.0,1.0,0.5
-		i = 0
-		while error > error_thresh and i < 100:
-			if prob_mid < x:                                     #move to larger range
-				lb = mid
-				prob_l = self.cumulative_density_function(lb)
-			else:                                                #move to smaller range
-				ub = mid
-				prib_u = self.cumulative_density_function(ub)
-			mid = (ub+lb)/2.0
-			prob_mid = self.cumulative_density_function(mid)
-			error = abs(prob_mid-x)
-			i += 1
-		return mid
+		u1 = np.random.uniform()
+		u2 = np.random.uniform()
+		z0 = np.sqrt(-2.0*np.log(u1)) * np.cos(2*np.pi * u2)
+		return z0 *self.sigma + self.mu
 
 	def cumulative_density_function(self, x):
 		return 0.5 + 0.5 * math.erf((x-self.mu)/(self.sigma*math.sqrt(2)))
@@ -207,6 +194,6 @@ def hw1_test4():
 
 # hw1_plot1()
 # hw1_plot2()
-# hw1_plot3()
-print hw1_test4()
+hw1_plot3()
+#print hw1_test4()
 
